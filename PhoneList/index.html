@@ -1,5 +1,6 @@
 <html ng-app="phoneList">
     <head>
+        <meta charset="UTF-8">
         <title>Phone List</title>
         <script src="lib/angular/angular.js"></script>
         <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
@@ -42,6 +43,7 @@
                 $scope.addContact = function (contact){
                     $scope.contacts.push(angular.copy(contact));
                     delete $scope.contact;
+                    $scope.contactForm.$setPristine();
                 };
                 $scope.deleteContact = function (contacts){
                    $scope.contacts = contacts.filter(function(contact){
@@ -74,15 +76,27 @@
                 </tr>
             </table>
             <hr/>
-            <input class="form-control" type="text" ng-model="contact.name" placeholder="Name"/>
-            <input class="form-control" type="text" ng-model="contact.phone"placeholder="Phone"/>
-            <hr/>
-            <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers">
-                <option value="">Select a carrier</option>
-            </select>
-           <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="!contact.name || !contact.phone">Add Contact</button>
-           <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)" >Delete Contact</button>
-        </div>
+            <form name="contactForm">
+                    <input class="form-control" type="text" ng-model="contact.name" name="name" placeholder="Name" ng-required="true" ng-minlength="10"/>
+                    <input class="form-control" type="text" ng-model="contact.phone"name="phone" placeholder="Phone" ng-required="true"/>
+                    <hr/>
+                    <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers">
+                        <option value="">Select a carrier</option>
+                    </select>
+                    <div ng-show="contactForm.name.$error.required && contactForm.name.$dirty" class="alert alert-danger">
+                        Please, insert name!   
+                    </div>
+                    <div ng-show="contactForm.name.$error.minlength" class="alert alert-danger">
+                            Name must be at least 10 characteres!   
+                        </div>
+                    <div ng-show="contactForm.phone.$invalid && contactForm.phone.$dirty" class="alert alert-danger">
+                            Please, insert phone!
+                        </div>
+                   <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="contactForm.$invalid">Add Contact</button>
+                   <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)" >Delete Contact</button>
+                
+            </form>
+            </div>
        <div ng-include="'footer.html'"></div>
     </body>
 </html>
