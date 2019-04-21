@@ -1,0 +1,87 @@
+<html ng-app="phoneList">
+    <head>
+        <title>Phone List</title>
+        <script src="lib/angular/angular.js"></script>
+        <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+        <style>
+            .jumbotron{
+                width: 400px;
+                text-align: center;
+                margin-top: 20px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .table{
+                margin-top: 20px;
+            }
+            .form-control{
+                margin-bottom: 5px;
+            }
+            .selected{
+                background-color: darkkhaki;
+            }
+            .bold{
+                font-weight: bold;
+            }
+
+        </style>
+        <script>
+            angular.module("phoneList", []);
+            angular.module("phoneList").controller("phoneListCtrl", function ($scope){
+                $scope.app = "Phone List";
+                $scope.contacts = [
+                    {name: "Maria", phone: "2262482555"},
+                    {name: "Jhon", phone: "2555554545"},
+                    {name: "Zuleide", phone: "7852554858"}
+                ];
+                $scope.carriers = [
+                    {name:"Telus"},
+                    {name:"Rogers"},
+                    {name:"Bell"}
+                ];
+                $scope.addContact = function (contact){
+                    $scope.contacts.push(angular.copy(contact));
+                    delete $scope.contact;
+                };
+                $scope.deleteContact = function (contacts){
+                   $scope.contacts = contacts.filter(function(contact){
+                        if(!contact.selected) return contact;
+                    });
+                };
+                $scope.isContactSelected = function (contacts){
+                    return contacts.some(function (contact){
+                        return contact.selected;
+                    });  
+                };
+            });
+            
+        </script>
+    </head>
+    <body ng-controller="phoneListCtrl">
+        <div class="jumbotron">
+            <h4>{{app}}</h4>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Carrier</th>
+                </tr>
+                <tr ng-class="{'selected bold': contact.selected}" ng-repeat="contact in contacts">
+                    <td><input type="checkbox" ng-model="contact.selected" ></td>
+                     <td>{{contact.name}}</td>
+                     <td>{{contact.phone}}</td>
+                     <td>{{contact.carriers.name}}</td>
+                </tr>
+            </table>
+            <hr/>
+            <input class="form-control" type="text" ng-model="contact.name" placeholder="Name"/>
+            <input class="form-control" type="text" ng-model="contact.phone"placeholder="Phone"/>
+            <hr/>
+            <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers">
+                <option value="">Select a carrier</option>
+            </select>
+           <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="!contact.name || !contact.phone">Add Contact</button>
+           <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-disabled="!isContactSelected(contacts)" >Delete Contact</button>
+        </div>
+    </body>
+</html>
