@@ -60,7 +60,7 @@
     <body ng-controller="phoneListCtrl">
         <div class="jumbotron">
             <h4>{{app}}</h4>
-            <table class="table">
+            <table ng-show="contacts.length > 0" class="table">
                 <tr>
                     <th>Name</th>
                     <th>Phone</th>
@@ -81,7 +81,8 @@
                 <option value="">Select a carrier</option>
             </select>
            <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="!contact.name || !contact.phone">Add Contact</button>
-           <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-disabled="!isContactSelected(contacts)" >Delete Contact</button>
+           <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)" >Delete Contact</button>
         </div>
+       <div ng-include="'footer.html'"></div>
     </body>
 </html>
