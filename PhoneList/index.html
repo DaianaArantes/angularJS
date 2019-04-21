@@ -27,7 +27,7 @@
 
         </style>
         <script>
-            angular.module("phoneList", []);
+            angular.module("phoneList", ["ngMessages"]);
             angular.module("phoneList").controller("phoneListCtrl", function ($scope){
                 $scope.app = "Phone List";
                 $scope.contacts = [
@@ -78,24 +78,31 @@
             <hr/>
             <form name="contactForm">
                     <input class="form-control" type="text" ng-model="contact.name" name="name" placeholder="Name" ng-required="true" ng-minlength="10"/>
-                    <input class="form-control" type="text" ng-model="contact.phone"name="phone" placeholder="Phone" ng-required="true"/>
+                    <input class="form-control" type="text" ng-model="contact.phone"name="phone" placeholder="Phone" ng-required="true" ng-pattern="/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/"/>
                     <hr/>
                     <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers">
                         <option value="">Select a carrier</option>
                     </select>
-                    <div ng-show="contactForm.name.$error.required && contactForm.name.$dirty" class="alert alert-danger">
-                        Please, insert name!   
-                    </div>
-                    <div ng-show="contactForm.name.$error.minlength" class="alert alert-danger">
-                            Name must be at least 10 characteres!   
-                        </div>
-                    <div ng-show="contactForm.phone.$invalid && contactForm.phone.$dirty" class="alert alert-danger">
-                            Please, insert phone!
-                        </div>
+                </form>
+                <div ng-messages="contactForm.name.$error" class="alert alert-danger">
+                        <div ng-show="required" >
+                                Please, insert name!   
+                            </div>
+                            <div ng-show="minlength" >
+                                    Name must be at least 10 characteres!   
+                                </div>
+                            <div ng-show="contactForm.phone.$error.required && contactForm.phone.$dirty">
+                                    Please, insert phone!
+                                </div>
+                                <div ng-show="contactForm.phone.$error.pattern" class="alert alert-danger">
+                                        Phone format not valid!
+                                    </div>
+                </div>
+                   
                    <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="contactForm.$invalid">Add Contact</button>
                    <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)" >Delete Contact</button>
                 
-            </form>
+            
             </div>
        <div ng-include="'footer.html'"></div>
     </body>
