@@ -1,109 +1,125 @@
 <html ng-app="phoneList">
-    <head>
-        <meta charset="UTF-8">
-        <title>Phone List</title>
-        <script src="lib/angular/angular.js"></script>
-        <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
-        <style>
-            .jumbotron{
-                width: 400px;
-                text-align: center;
-                margin-top: 20px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .table{
-                margin-top: 20px;
-            }
-            .form-control{
-                margin-bottom: 5px;
-            }
-            .selected{
-                background-color: darkkhaki;
-            }
-            .bold{
-                font-weight: bold;
-            }
 
-        </style>
-        <script>
-            angular.module("phoneList", ["ngMessages"]);
-            angular.module("phoneList").controller("phoneListCtrl", function ($scope){
-                $scope.app = "Phone List";
-                $scope.contacts = [
-                    {name: "Maria", phone: "2262482555"},
-                    {name: "Jhon", phone: "2555554545"},
-                    {name: "Zuleide", phone: "7852554858"}
-                ];
-                $scope.carriers = [
-                    {name:"Telus"},
-                    {name:"Rogers"},
-                    {name:"Bell"}
-                ];
-                $scope.addContact = function (contact){
-                    $scope.contacts.push(angular.copy(contact));
-                    delete $scope.contact;
-                    $scope.contactForm.$setPristine();
-                };
-                $scope.deleteContact = function (contacts){
-                   $scope.contacts = contacts.filter(function(contact){
-                        if(!contact.selected) return contact;
-                    });
-                };
-                $scope.isContactSelected = function (contacts){
-                    return contacts.some(function (contact){
-                        return contact.selected;
-                    });  
-                };
-            });
-            
-        </script>
-    </head>
-    <body ng-controller="phoneListCtrl">
-        <div class="jumbotron">
-            <h4>{{app}}</h4>
-            <table ng-show="contacts.length > 0" class="table">
-                <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Carrier</th>
-                </tr>
-                <tr ng-class="{'selected bold': contact.selected}" ng-repeat="contact in contacts">
-                    <td><input type="checkbox" ng-model="contact.selected" ></td>
-                     <td>{{contact.name}}</td>
-                     <td>{{contact.phone}}</td>
-                     <td>{{contact.carriers.name}}</td>
-                </tr>
-            </table>
+<head>
+    <meta charset="UTF-8">
+    <title>Phone List</title>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular/angular-messages.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+    <style>
+        .jumbotron {
+            width: 600px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .form-control {
+            margin-bottom: 5px;
+        }
+
+        .selected {
+            background-color: darkkhaki;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        angular.module("phoneList", ["ngMessages"]);
+        angular.module("phoneList").controller("phoneListCtrl", function ($scope) {
+            $scope.app = "Phone List";
+            $scope.contacts = [
+                { name: "Maria", phone: "2262482555", date: new Date(), carrier: {name:"Telus"}},
+                { name: "Jhon", phone: "2555554545", date: new Date(), carrier: {name:"Bell"} },
+                { name: "Zuleide", phone: "7852554858", date: new Date(), carrier: {name:"Rogers"} }
+            ];
+            $scope.carriers = [
+                { name: "Telus" },
+                { name: "Rogers" },
+                { name: "Bell" },
+                { name: "Fido" }
+            ];
+            $scope.addContact = function (contact) {
+                $scope.contacts.push(angular.copy(contact));
+                delete $scope.contact;
+                $scope.contactForm.$setPristine();
+            };
+            $scope.deleteContact = function (contacts) {
+                $scope.contacts = contacts.filter(function (contact) {
+                    if (!contact.selected) return contact;
+                });
+            };
+            $scope.isContactSelected = function (contacts) {
+                return contacts.some(function (contact) {
+                    return contact.selected;
+                });
+            };
+        });
+
+    </script>
+</head>
+
+<body ng-controller="phoneListCtrl">
+    <div class="jumbotron">
+        <h4>{{app}}</h4>
+        <input class="form-control" type="text" ng-model="searchCriteria" placeholder="what are you looking for?">
+        <table ng-show="contacts.length > 0" class="table">
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Carrier</th>
+                <th>Date</th>
+            </tr>
+            <tr ng-class="{'selected bold': contact.selected}" ng-repeat="contact in contacts | filter:{name: searchCriteria} | orderBy:'name'">
+                <td>
+                    <input type="checkbox" ng-model="contact.selected">
+                </td>
+                <td>{{contact.name | uppercase}}</td>
+                <td>{{contact.phone}}</td>
+                <td>{{contact.carrier.name | lowercase}}</td>
+                <td>{{contact.date | date:'dd/MM/yyyy HH:mm'}}</td>
+            </tr>
+        </table>
+        <hr/>
+        <form name="contactForm">
+            <input class="form-control" type="text" ng-model="contact.name" name="name" placeholder="Name" ng-required="true" ng-minlength="10"
+            />
+            <input class="form-control" type="text" ng-model="contact.phone" name="phone" placeholder="Phone" ng-required="true" ng-pattern="/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/"
+            />
             <hr/>
-            <form name="contactForm">
-                    <input class="form-control" type="text" ng-model="contact.name" name="name" placeholder="Name" ng-required="true" ng-minlength="10"/>
-                    <input class="form-control" type="text" ng-model="contact.phone"name="phone" placeholder="Phone" ng-required="true" ng-pattern="/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/"/>
-                    <hr/>
-                    <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers">
-                        <option value="">Select a carrier</option>
-                    </select>
-                </form>
-                <div ng-messages="contactForm.name.$error" class="alert alert-danger">
-                        <div ng-show="required" >
-                                Please, insert name!   
-                            </div>
-                            <div ng-show="minlength" >
-                                    Name must be at least 10 characteres!   
-                                </div>
-                            <div ng-show="contactForm.phone.$error.required && contactForm.phone.$dirty">
-                                    Please, insert phone!
-                                </div>
-                                <div ng-show="contactForm.phone.$error.pattern" class="alert alert-danger">
-                                        Phone format not valid!
-                                    </div>
-                </div>
-                   
-                   <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="contactForm.$invalid">Add Contact</button>
-                   <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)" >Delete Contact</button>
-                
-            
+            <select class="form-control" ng-model="contact.carriers" ng-options="carrier.name for carrier in carriers | orderBy: 'name'">
+                <option value="">Select a carrier</option>
+            </select>
+        </form>
+        <div ng-messages="contactForm.name.$error" class="alert alert-danger">
+            <div ng-show="required">
+                Please, insert name!
             </div>
-       <div ng-include="'footer.html'"></div>
-    </body>
+            <div ng-show="minlength">
+                Name must be at least 10 characteres!
+            </div>
+            <div ng-show="contactForm.phone.$error.required && contactForm.phone.$dirty">
+                Please, insert phone!
+            </div>
+            <div ng-show="contactForm.phone.$error.pattern" class="alert alert-danger">
+                Phone format not valid!
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" ng-click="addContact(contact)" ng-disabled="contactForm.$invalid">Add Contact</button>
+        <button class="btn btn-danger btn-block" ng-click="deleteContact(contacts)" ng-show="isContactSelected(contacts)">Delete Contact</button>
+
+
+    </div>
+    <div ng-include="'footer.html'"></div>
+</body>
+
 </html>
