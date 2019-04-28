@@ -1,16 +1,19 @@
-angular.module("phoneList").controller("phoneListCtrl", function ($scope) {
+angular.module("phoneList").controller("phoneListCtrl", function ($scope, $http) {
     $scope.app = "Phone List";
-    $scope.contacts = [
-        { name: "Maria", phone: "2262482555", date: new Date(), carrier: { name: "Telus" } },
-        { name: "Jhon", phone: "2555554545", date: new Date(), carrier: { name: "Bell" } },
-        { name: "Zuleide", phone: "7852554858", date: new Date(), carrier: { name: "Rogers" } }
-    ];
-    $scope.carriers = [
-        { name: "Telus" },
-        { name: "Rogers" },
-        { name: "Bell" },
-        { name: "Fido" }
-    ];
+    $scope.contacts = [];
+    $scope.carriers = [];
+
+    var getContacts = function () {
+        $http.get("http://localhost:3412/contacts").then(function (response) {
+            $scope.contacts = response.data;
+        });
+    };
+    var getCarriers = function () {
+        $http.get("http://localhost:3412/carriers").then(function (response) {
+            $scope.carriers = response.data;
+        });
+    };
+
     $scope.addContact = function (contact) {
         $scope.contacts.push(angular.copy(contact));
         delete $scope.contact;
@@ -26,4 +29,6 @@ angular.module("phoneList").controller("phoneListCtrl", function ($scope) {
             return contact.selected;
         });
     };
+    getContacts();
+    getCarriers();
 });
