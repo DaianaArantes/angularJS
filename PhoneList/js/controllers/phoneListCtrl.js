@@ -15,9 +15,17 @@ angular.module("phoneList").controller("phoneListCtrl", function ($scope, $http)
     };
 
     $scope.addContact = function (contact) {
-        $scope.contacts.push(angular.copy(contact));
-        delete $scope.contact;
-        $scope.contactForm.$setPristine();
+        contact.date = new Date();
+        $http.post("http://localhost:3412/contacts", contact)
+            .then(function(response){
+                delete $scope.contact;
+                $scope.contactForm.$setPristine();
+                getContacts();
+            })
+            .catch(function onError(error) {
+                console.log(error);         
+            });
+        
     };
     $scope.deleteContact = function (contacts) {
         $scope.contacts = contacts.filter(function (contact) {
